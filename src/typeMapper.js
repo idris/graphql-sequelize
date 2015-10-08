@@ -28,7 +28,8 @@ export function toGraphQL(sequelizeType, sequelizeTypes) {
     DATE,
     DATEONLY,
     ARRAY,
-    VIRTUAL
+    VIRTUAL,
+    JSONB
   } = sequelizeTypes;
 
   // Regex for finding special characters
@@ -46,7 +47,8 @@ export function toGraphQL(sequelizeType, sequelizeTypes) {
       sequelizeType instanceof TEXT ||
       sequelizeType instanceof UUID ||
       sequelizeType instanceof DATE ||
-      sequelizeType instanceof DATEONLY) {
+      sequelizeType instanceof DATEONLY ||
+      sequelizeType instanceof JSONB) {
     return GraphQLString;
   }
 
