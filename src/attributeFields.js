@@ -10,15 +10,21 @@ module.exports = function (Model, options) {
     if (options.only && !~options.only.indexOf(key)) return memo;
 
     var attribute = Model.rawAttributes[key]
-      , type = attribute.type;
+      , type = attribute.type
+      , mappedKey;
 
     if (options.map && options.map[key]) {
+      mappedKey = key;
       key = options.map[key];
     }
 
     memo[key] = {
       type: typeMapper.toGraphQL(type, Model.sequelize.constructor)
     };
+
+    if (mappedKey && mappedKey !== key) {
+      memo[key].resolve = instance => instance.get(mappedKey);
+    }
 
     if (memo[key].type instanceof GraphQLEnumType ) {
       memo[key].type.name = `${Model.name}${key}EnumType`;

@@ -109,9 +109,13 @@ describe('attributeFields', function () {
         id: '_id'
       }
     });
+    var instance = Model.build({ id: 123 });
 
     expect(Object.keys(fields)).to.contain('_id');
     expect(Object.keys(fields)).not.to.contain('id');
+
+    expect(fields._id.resolve).to.be.a('function');
+    expect(fields._id.resolve(instance)).to.equal(123);
   });
 
   it('should be possible to automatically set a relay globalId', function () {
