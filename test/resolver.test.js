@@ -139,6 +139,10 @@ describe('resolver', function () {
         name: {
           type: GraphQLString,
         },
+        mappedName: {
+          type: GraphQLString,
+          resolver: instance => instance.get('name')
+        },
         myVirtual: {
           type: GraphQLString
         },
@@ -317,6 +321,28 @@ describe('resolver', function () {
     });
   });
 
+  it.only('should resolve a plain result with a single model and a mapped key', function () {
+    var user = this.userB;
+
+    return graphql(schema, `
+      {
+        user(id: ${user.id}) {
+          mappedName
+          myVirtual
+        }
+      }
+    `).then(function (result) {
+      if (result.errors) throw new Error(result.errors[0].stack);
+
+      expect(result.data).to.deep.equal({
+        user: {
+          mappedName: user.name,
+          myVirtual: 'lol'
+        }
+      });
+    });
+  });
+
   it('should resolve a plain result with a single model and aliases', function () {
     var userA = this.userA
       , userB = this.userB;
@@ -359,7 +385,7 @@ describe('resolver', function () {
           }
 
           rest: tasks(offset: 1, limit: 99) {
-            title     
+            title
           }
         }
       }
@@ -785,7 +811,7 @@ describe('resolver', function () {
     var user = this.userB;
 
     return graphql(schema, `
-      { 
+      {
         user(id: ${user.id}) {
           name
           tasks {
@@ -813,7 +839,7 @@ describe('resolver', function () {
     var user = this.userB;
 
     return graphql(schema, `
-      { 
+      {
         user(id: ${user.id}) {
           name
           tasks(limit: 1) {
@@ -833,7 +859,7 @@ describe('resolver', function () {
 
     return graphql(schema, `
       {
-        users(order: "id") { 
+        users(order: "id") {
           name
           tasks(order: "id") {
             title
@@ -864,7 +890,7 @@ describe('resolver', function () {
 
     return graphql(schema, `
       {
-        users { 
+        users {
           name
           tasks(limit: 1) {
             title
@@ -887,7 +913,7 @@ describe('resolver', function () {
 
     return graphql(schema, `
       {
-        users { 
+        users {
           tasks(limit: 2) {
             title
             project {
@@ -919,7 +945,7 @@ describe('resolver', function () {
 
     return graphql(schema, `
       {
-        users { 
+        users {
           tasks {
             title
             project {
@@ -951,7 +977,7 @@ describe('resolver', function () {
 
     return graphql(schema, `
       {
-        users { 
+        users {
           tasks {
             title
             project {
